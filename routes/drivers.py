@@ -1,3 +1,6 @@
+# SafeRide Backend - Driver Management Routes
+# Driver registration, profile management, and vehicle information
+
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import Driver, User, Trip
@@ -7,6 +10,7 @@ import os
 from werkzeug.utils import secure_filename
 import uuid
 
+# Create drivers blueprint
 drivers_bp = Blueprint('drivers', __name__)
 
 UPLOAD_FOLDER = 'uploads/documents'
@@ -20,6 +24,7 @@ def allowed_file(filename):
 def get_available_trips():
     """Get available trips for driver"""
     try:
+        # Get current user from JWT
         user_id = get_jwt_identity()
         user = User.query.get(user_id)
         
@@ -70,6 +75,7 @@ def update_driver_status():
                 }
             }), 403
         
+        # Extract driver registration data
         data = request.json
         is_online = data.get('isOnline')
         
@@ -115,6 +121,7 @@ def update_driver_status():
 def get_driver_profile():
     """Get driver profile"""
     try:
+        # Get current user from JWT
         user_id = get_jwt_identity()
         user = User.query.get(user_id)
         
@@ -129,6 +136,7 @@ def get_driver_profile():
         
         driver = Driver.query.filter_by(user_id=user_id).first()
         
+        # Verify driver profile exists
         if not driver:
             # Create driver profile if it doesn't exist
             driver = Driver(user_id=user_id)

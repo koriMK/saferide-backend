@@ -1,8 +1,12 @@
+# SafeRide Backend - Authentication Routes
+# JWT-based authentication system for users
+
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from models import User, Driver, db
 import re
 
+# Create authentication blueprint
 auth_bp = Blueprint('auth', __name__)
 
 def validate_email(email):
@@ -19,6 +23,7 @@ def validate_phone(phone):
 def register():
     """Register new user"""
     try:
+        # Extract user data from request
         data = request.json
         
         # Validate required fields
@@ -117,6 +122,7 @@ def register():
         )
         user.set_password(password)
         
+        # Save user to database
         db.session.add(user)
         db.session.commit()
         
@@ -150,11 +156,13 @@ def register():
 def login():
     """Login user"""
     try:
+        # Extract login credentials
         data = request.json
         
         email = data.get('email', '').lower()
         password = data.get('password', '')
         
+        # Validate credentials provided
         if not email or not password:
             return jsonify({
                 'success': False,
@@ -199,9 +207,11 @@ def login():
 def get_current_user():
     """Get current user profile"""
     try:
+        # Extract user ID from JWT token
         user_id = get_jwt_identity()
         user = User.query.get(user_id)
         
+        # Verify user exists in database
         if not user:
             return jsonify({
                 'success': False,

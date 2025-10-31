@@ -1,9 +1,13 @@
+# SafeRide Backend - Trip Management Routes
+# Trip booking, tracking, and management system
+
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import Trip, User, Driver, db
 from datetime import datetime
 import math
 
+# Create trips blueprint
 trips_bp = Blueprint('trips', __name__)
 
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -24,6 +28,7 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 def create_trip():
     """Create new trip request"""
     try:
+        # Get current user from JWT
         user_id = get_jwt_identity()
         user = User.query.get(user_id)
         
@@ -36,6 +41,7 @@ def create_trip():
                 }
             }), 403
         
+        # Extract trip data from request
         data = request.json
         pickup = data.get('pickup')
         dropoff = data.get('dropoff')
@@ -91,6 +97,7 @@ def create_trip():
             status='requested'
         )
         
+        # Save trip to database
         db.session.add(trip)
         db.session.commit()
         
@@ -119,6 +126,7 @@ def create_trip():
 def get_trips():
     """Get user's trips"""
     try:
+        # Get current user from JWT
         user_id = get_jwt_identity()
         user = User.query.get(user_id)
         
@@ -210,6 +218,7 @@ def accept_trip(trip_id):
         
         db.session.commit()
         
+        # Return trips as JSON
         return jsonify({
             'success': True,
             'message': 'Trip accepted',

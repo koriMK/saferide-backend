@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import User, db
 
+# Create users blueprint
 users_bp = Blueprint('users', __name__)
 
 @users_bp.route('/profile', methods=['GET'])
@@ -9,6 +10,7 @@ users_bp = Blueprint('users', __name__)
 def get_user_profile():
     """Get user profile"""
     try:
+        # Get current user from JWT token
         user_id = get_jwt_identity()
         user = User.query.get(user_id)
         
@@ -75,6 +77,7 @@ def update_user_profile():
         
         db.session.commit()
         
+        # Return user list as JSON
         return jsonify({
             'success': True,
             'message': 'Profile updated successfully',
